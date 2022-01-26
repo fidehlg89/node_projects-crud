@@ -1,7 +1,7 @@
 const sql = require("../db/connection");
 
 // constructor
-const Project = function(Project) {
+const Project = function (Project) {
   this.title = Project.title;
   this.description = Project.description;
 };
@@ -19,8 +19,27 @@ Project.create = (newProject, result) => {
   });
 };
 
-Project.remove = (id, result) => {
-  sql.query("DELETE FROM tutorials WHERE id = ?", id, (err, res) => {
+Project.read = (id, result) => {
+  sql.query(`SELECT * FROM project WHERE id = ${id}`, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+
+    if (res.length) {
+      console.log("found project: ", res[0]);
+      result(null, res[0]);
+      return;
+    }
+
+    // not found Tutorial with the id
+    result({ kind: "not_found" }, null);
+  });
+};
+
+Project.delete = (id, result) => {
+  sql.query("DELETE FROM project WHERE id = ?", id, (err, res) => {
     if (err) {
       console.log("error: ", err);
       result(null, err);
@@ -33,7 +52,26 @@ Project.remove = (id, result) => {
       return;
     }
 
-    console.log("deleted tutorial with id: ", id);
+    console.log("deleted project with id: ", id);
+    result(null, res);
+  });
+};
+
+Project.getAll = (title, result) => {
+  let query = "SELECT * FROM project";
+
+  if (title) {
+    query += ` WHERE title LIKE '%${title}%'`;
+  }
+
+  sql.query(query, (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(null, err);
+      return;
+    }
+
+    console.log("projects: ", res);
     result(null, res);
   });
 };
