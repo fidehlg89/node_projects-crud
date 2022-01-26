@@ -38,6 +38,29 @@ Project.read = (id, result) => {
   });
 };
 
+Project.update = (id, project, result) => {
+  sql.query(
+    "UPDATE project SET title = ?, description = ? WHERE id = ?",
+    [project.title, project.description, id],
+    (err, res) => {
+      if (err) {
+        console.log("error: ", err);
+        result(null, err);
+        return;
+      }
+
+      if (res.affectedRows == 0) {
+        // not found Tutorial with the id
+        result({ kind: "not_found" }, null);
+        return;
+      }
+
+      console.log("updated project: ", { id: id, ...project });
+      result(null, { id: id, ...project });
+    }
+  );
+};
+
 Project.delete = (id, result) => {
   sql.query("DELETE FROM project WHERE id = ?", id, (err, res) => {
     if (err) {
