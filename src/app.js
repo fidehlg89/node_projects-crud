@@ -4,7 +4,7 @@ const Projects = require("./routes/projects");
 
 const app = express();
 
-var corsOptions = {
+const corsOptions = {
   origin: "http://localhost:3000",
 };
 
